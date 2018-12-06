@@ -3,6 +3,7 @@ import App from './App'
 import router from './router'
 import MintUI from 'mint-ui'
 import VueLazyload from 'vue-lazyload'
+import store from './store'
 import 'mint-ui/lib/style.css'
 import '@/style/common.scss'
 
@@ -17,5 +18,6 @@ list.map((item) => Vue.use(item))
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App)
 })

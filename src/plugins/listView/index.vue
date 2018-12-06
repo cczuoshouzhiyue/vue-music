@@ -94,14 +94,14 @@
           <li v-for="item in list" :key="item.title" ref="listGroup">
             <h2 v-html="item.title"> </h2>
             <ul class="list">
-              <li v-for="child in item.list" :key="child.name">
+              <li v-for="child in item.list" :key="child.name" @click="selectItem(child)">
                 <img class="avatar" v-lazy="child.avatar">
                 <span class="name">{{child.name}}</span>
               </li>
             </ul>
           </li>
         </ul>
-        <div class="shortCutList" @touchstart.stop.prevent="onShortTouchStart" @touchmove.stop.prevent="onShortTouchMove">
+        <div class="shortCutList" @touchstart.stop.prevent="onShortTouchStart" @touchmove.stop.prevent="onShortTouchMove"  @touchend.stop>
           <ul>
             <li v-for="(item, index) in shortCutList" :key="index" :data-index="index" :class="{'current': currIndex === index}">{{item}}</li>
           </ul>
@@ -134,7 +134,8 @@ export default {
       probeType: 3,
       currIndex: 0,
       scrollY: -1,
-      diff: -1
+      diff: -1,
+      listHeight: []
     }
   },
   computed: {
@@ -154,6 +155,9 @@ export default {
     this.touchObj = {}
   },
   methods: {
+    selectItem (item) {
+      this.$emit('select', item)
+    },
     onShortTouchStart (e) {
       let touchStartIndex = getDataIndex(e.target, 'index')
       let touchDom = e.touches[0]
@@ -165,7 +169,8 @@ export default {
       let touchDom = e.touches[0]
       let pageYEnd = touchDom.pageY
       let dif = (pageYEnd - this.touchObj.pageYStart) / ANCHOR_HEIGHT || 0
-      let index = parseInt(this.touchObj.currIndex) + dif
+      let index = parseInt(this.touchObj.currIndex) + parseInt(dif)
+      console.log(index)
       this._scrollToElement(index)
     },
     _scrollToElement (index) {
@@ -175,9 +180,13 @@ export default {
       if (index < 0) {
         index = 0
       }
+      if (this.listHeight.length < 1) {
+        return
+      }
       if (index > this.listHeight.length - 2) {
         index = this.listHeight.length - 2
       }
+      this.scrollY = -this.listHeight[index]
       this.$refs.singerScroll.scrollToElement(this.$refs.listGroup[index])
     },
     _scroll (pos) {

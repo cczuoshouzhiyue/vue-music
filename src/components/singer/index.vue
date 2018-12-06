@@ -9,7 +9,8 @@
 </style>
 <template>
   <div class="singer">
-      <list-view :list="list"></list-view>
+      <list-view :list="list" @select="goDetail"></list-view>
+      <router-view class="router-view"></router-view>
   </div>
 </template>
 <script>
@@ -17,6 +18,7 @@ import ListView from '@/plugins/listView/index'
 import {getSingerList} from '@/api/singer'
 import {ERR_OK} from '@/api/config'
 import Singer from '@/util/singerClass'
+import {mapMutations} from 'vuex'
 const HOT_SINGER_LEN = 10
 const HOT_NAME = '热门'
 export default {
@@ -47,7 +49,6 @@ export default {
         }
       }
       list.map((item, index) => {
-        console.log(index)
         if (index < HOT_SINGER_LEN) {
           mapList.hot.list.push(new Singer({
             id: item.Fsinger_mid,
@@ -80,7 +81,15 @@ export default {
         return a.title.charCodeAt() - b.title.charCodeAt()
       })
       return hot.concat(ret)
-    }
+    },
+    goDetail (item) {
+      this.$router.push('/singerDetail')
+      console.log(item)
+      this.setSinger(item)
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    })
   }
 }
 </script>
