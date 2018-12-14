@@ -12,7 +12,7 @@
 
 <template>
   <div class="music-list">
-     这是详情列表
+     这是详情列表--
     {{title}}
     <img :src="bgImage" alt="">
   </div>
