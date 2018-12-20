@@ -36,20 +36,21 @@ export default {
   mounted () {
     this._getDetailData()
   },
-  created () {
-    this.song = []
+  data () {
+    return {
+      song: []
+    }
   },
   methods: {
     _getDetailData () {
-      console.log(this.singer)
       if (!this.singer || !this.singer.id) {
         this.$router.push('/singer')
+        return
       }
       getSingerDetail(this.singer.id).then((data) => {
-        if (data.code !== ERR_OK) {
-          return
+        if (data.code === ERR_OK) {
+          this.detailData(data.data.list)
         }
-        this.detailData(data.data.list)
       })
     },
     detailData (list) {

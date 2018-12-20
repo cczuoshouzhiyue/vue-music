@@ -4,7 +4,7 @@
     position: absolute;
     left: 0;
     top: 0;
-    overflow: hidden;
+    /*overflow: hidden;*/
     width: 100%;
   }
 </style>

@@ -83,9 +83,8 @@ export default {
       return hot.concat(ret)
     },
     goDetail (item) {
-      this.$router.push('/singerDetail')
-      console.log(item)
       this.setSinger(item)
+      this.$router.push('/singerDetail')
     },
     ...mapMutations({
       setSinger: 'SET_SINGER'
