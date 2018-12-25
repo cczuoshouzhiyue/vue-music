@@ -16,7 +16,7 @@
 import MusicList from '@/components/music-list'
 import {mapGetters} from 'vuex'
 import {ERR_OK} from '../../api/config'
-import {getSingerDetail} from '@/api/singer'
+import {getSingerDetail, getMusic} from '@/api/singer'
 import {createSong} from '@/api/song'
 export default {
   computed: {
@@ -56,7 +56,15 @@ export default {
     detailData (list) {
       list.map((item) => {
         let {musicData} = item
-        this.song.push(createSong(musicData))
+        this.getSongVkey(musicData)
+      })
+    },
+    getSongVkey (item) {
+      getMusic(item.songmid).then((data) => {
+        if (data.code === 0) {
+          let vkey = data.data.items[0].vkey
+          this.song.push(createSong(item, vkey))
+        }
       })
     }
   }

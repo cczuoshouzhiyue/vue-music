@@ -82,7 +82,7 @@
       @scroll="scrollHandle"
       ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="list"></song-list>
+        <song-list :songs="list" @select="selectHandle"></song-list>
       </div>
     </scroll>
   </div>
@@ -91,6 +91,7 @@
 <script>
 import Scroll from '@/plugins/scroll'
 import SongList from '@/components/song-list'
+import {mapActions} from 'vuex'
 const RESERVED_HEIGHT = 40
 export default {
   props: {
@@ -136,7 +137,13 @@ export default {
     },
     scrollHandle (pos) {
       this.scrollY = pos.y
-    }
+    },
+    selectHandle (item, index) {
+      this.selectPlay({list: this.list, index})
+    },
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   watch: {
     scrollY (newVal) {
