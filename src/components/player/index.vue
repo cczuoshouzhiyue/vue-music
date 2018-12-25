@@ -292,8 +292,8 @@
         .icon-mini {
           font-size: 32px;
           position: absolute;
-          right: 50px;
-          top: 15px;
+          right: 0;
+          top: 0;
         }
       }
     }
@@ -340,18 +340,12 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{formatTime(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <progress-bar :percent="percent"></progress-bar>
+              <progress-bar :percent="percent" @percentChange="percentChangeHandle"></progress-bar>
             </div>
-
-            <!--<span class="time time-l">{{format(currentTime)}}</span>-->
-            <!--<div class="progress-bar-wrapper">-->
-              <!--<progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>-->
-            <!--</div>-->
-            <!--<span class="time time-r">{{format(currentSong.duration)}}</span>-->
           </div>
            <div class="operators">
-              <div class="icon i-left">
-                <i class="icon-sequence"></i>
+              <div class="icon i-left" @click="changePlayMode">
+                <i :class="iconMode"></i>
               </div>
              <div class="icon i-left" :class="disableCls">
                <i class="icon-prev" @click="prev"></i>
@@ -379,14 +373,16 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <i  class="icon-mini" :class="miniIcon" @click.stop="togglePlaying"></i>
+          <progress-circle :radius="radius" :percent="percent">
+            <i  class="icon-mini" :class="miniIcon" @click.stop="togglePlaying"></i>
+          </progress-circle>
         </div>
           <div class="control">
             <i class="icon-playlist"></i>
           </div>
       </div>
       </transition>
-      <audio ref="audio" :src="currentSong.url" @error="error"  @play="ready"  @timeupdate="updateTime"></audio>
+      <audio ref="audio" :src="currentSong.url" @error="error"  @play="ready"  @timeupdate="updateTime" @ended="end"></audio>
     </div>
 </template>
 
@@ -395,6 +391,9 @@ import {mapGetters, mapMutations, mapActions} from 'vuex'
 import animations from 'create-keyframe-animation'
 import {prefixStyle} from '@/util/dom.js'
 import ProgressBar from '@/components/progressBar/index'
+import ProgressCircle from '@/components/progressCircle/index'
+import {playMode} from '@/util/config'
+import {shuffle} from '@/util/index'
 const transform = prefixStyle('transform')
 // const transitionDuration = prefixStyle('transitionDuration')
 export default {
@@ -408,6 +407,17 @@ export default {
     disableCls () {
       return this.songReady ? '' : 'disable'
     },
+    iconMode () {
+      if (this.mode === playMode.sequence) {
+        return 'icon-sequence'
+      }
+      if (this.mode === playMode.loop) {
+        return 'icon-loop'
+      }
+      if (this.mode === playMode.random) {
+        return 'icon-random'
+      }
+    },
     miniIcon () {
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
     },
@@ -418,21 +428,28 @@ export default {
       'fullScreen',
       'playlist',
       'currentSong',
+      'mode',
       'playing',
+      'sequenceList',
       'currentIndex'
     ])
   },
   data () {
     return {
       songReady: false,
-      currentTime: ''
+      currentTime: '',
+      radius: 32
     }
   },
   components: {
-    ProgressBar
+    ProgressBar,
+    ProgressCircle
   },
   watch: {
-    currentSong (newValue) {
+    currentSong (newValue, oldValue) {
+      if (newValue.id === oldValue.id) {
+        return
+      }
       this.$nextTick (() => {
         this.$refs.audio.play()
       })
@@ -497,6 +514,10 @@ export default {
     error () {
       this.songReady = true
     },
+    lood () {
+      this.$refs.audio.currentTime = 0
+      this.$refs.audio.play()
+    },
     next () {
       if (!this.songReady) {
         return
@@ -526,7 +547,6 @@ export default {
       this.currentTime = e.target.currentTime
     },
     formatTime (interval) {
-      console.log(interval)
       let time = interval | 0
       let minute = time / 60 | 0
       let secode = this._pad(time % 60)
@@ -555,10 +575,42 @@ export default {
         scale
       }
     },
+    changePlayMode () {
+      let mode = (this.mode + 1) % 3
+      this.setPlayMode(mode)
+      let list = []
+      if (mode === playMode.random) {
+        list = shuffle(this.sequenceList)
+      } else {
+        list = this.sequenceList
+      }
+      this.resetCurrentIndex(list)
+      this.setPlayList(list)
+    },
+    resetCurrentIndex (list) {
+      let _this = this
+      let index = list.findIndex((item) => {
+        return item.id === _this.currentSong.id
+      })
+      this.setCurrentIndex(index)
+    },
+    percentChangeHandle (percent) {
+      const currentTime = percent * this.currentSong.duration
+      this.$refs.audio.currentTime = currentTime
+    },
+    end () {
+      if (this.mode === playMode.loop) {
+        this.lood()
+        return
+      }
+      this.next()
+    },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX'
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlayList: 'SET_PLAYLIST'
     })
   }
 }

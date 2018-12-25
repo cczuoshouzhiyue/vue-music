@@ -39,6 +39,34 @@
       padding-top: 70%;
       transform-origin: top;
       background-size: cover;
+      .play-wrapper {
+        position: absolute;
+        bottom: 20px;
+        z-index: 50;
+        width: 100%;
+        .play {
+          box-sizing: border-box;
+          width: 135px;
+          padding: 7px 0;
+          margin: 0 auto;
+          text-align: center;
+          border: 1px solid #ffcd32;
+          color: #ffcd32;
+          border-radius: 100px;
+          font-size: 0;
+          .icon-play {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 6px;
+            font-size: 16px;
+          }
+          .text {
+            display: inline-block;
+            vertical-align: middle;
+            font-size: 12px;
+          }
+        }
+      }
     }
     .bg-layer{
       position: relative;
@@ -65,12 +93,12 @@
     </div>
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
-      <!--<div class="play-wrapper">-->
-        <!--<div ref="playBtn" v-show="songs.length>0" class="play" @click="random">-->
-          <!--<i class="icon-play"></i>-->
-          <!--<span class="text">随机播放全部</span>-->
-        <!--</div>-->
-      <!--</div>-->
+      <div class="play-wrapper">
+        <div ref="playBtn" v-show="list.length > 0" class="play" @click="random">
+          <i class="icon-play"></i>
+          <span class="text">随机播放全部</span>
+        </div>
+      </div>
       <div class="filter" ref="filter"></div>
     </div>
     <div class="bg-layer" ref="layer"></div>
@@ -141,8 +169,13 @@ export default {
     selectHandle (item, index) {
       this.selectPlay({list: this.list, index})
     },
+    random () {
+      /*需要打乱列表的顺序，设置播放模式为随机模式,选择歌曲点击时，需要判断是否是随机模式，如果是随机模式需要打乱列表顺序， 同时找到打乱后的选中歌曲的索引index值,设置为currentIndex*/
+      this.randomPlay({list: this.list})
+    },
     ...mapActions([
-      'selectPlay'
+      'selectPlay',
+      'randomPlay'
     ])
   },
   watch: {
@@ -160,9 +193,11 @@ export default {
         zIndex = 10
         this.$refs.bgImage.style.paddingTop = 0
         this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`
+        this.$refs.playBtn.style.display = 'none'
       } else {
         this.$refs.bgImage.style.paddingTop = '70%'
         this.$refs.bgImage.style.height = 0
+        this.$refs.playBtn.style.display = ''
       }
       this.$refs.bgImage.style['transform'] = `scale(${scale})`
       this.$refs.bgImage.style.zIndex = zIndex
