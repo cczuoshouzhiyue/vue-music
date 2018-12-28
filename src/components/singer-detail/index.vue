@@ -16,7 +16,7 @@
 import MusicList from '@/components/music-list'
 import {mapGetters} from 'vuex'
 import {ERR_OK} from '../../api/config'
-import {getSingerDetail, getMusic} from '@/api/singer'
+import {getSingerDetail} from '@/api/singer'
 import {createSong} from '@/api/song'
 export default {
   computed: {
@@ -47,6 +47,7 @@ export default {
         this.$router.push('/singer')
         return
       }
+      debugger
       getSingerDetail(this.singer.id).then((data) => {
         if (data.code === ERR_OK) {
           this.detailData(data.data.list)
@@ -56,15 +57,7 @@ export default {
     detailData (list) {
       list.map((item) => {
         let {musicData} = item
-        this.getSongVkey(musicData)
-      })
-    },
-    getSongVkey (item) {
-      getMusic(item.songmid).then((data) => {
-        if (data.code === 0) {
-          let vkey = data.data.items[0].vkey
-          this.song.push(createSong(item, vkey))
-        }
+        this.song.push(createSong(musicData))
       })
     }
   }

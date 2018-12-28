@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "create-keyframe-animation": "^0.1.0",
+    "js-base64": "^2.5.0",
     "jsonp": "^0.2.1",
+    "lyric-parser": "^1.0.1",
     "mint-ui": "^2.2.13",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
