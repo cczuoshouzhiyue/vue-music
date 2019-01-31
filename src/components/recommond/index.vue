@@ -125,7 +125,6 @@ export default {
       getRecommond().then((data) => {
         if (data.code === ERR_OK) {
           this.imageArr = data.data.slider
-          console.log(this.imageArr)
         }
       })
     },
@@ -143,6 +142,9 @@ export default {
       }
     },
     goDetail (item) {
+      // this.$router.push({
+      //   path: `/recommend/${item.dissid}`
+      // })
       console.log(item)
     }
   }

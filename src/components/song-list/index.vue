@@ -1,15 +1,16 @@
 <style lang="scss" scoped>
   .song-list {
     .item{
-      /*display: flex;*/
+      display: flex;
       align-items: center;
       box-sizing: border-box;
       height: 64px;
       font-size: 16px;
+      line-height: 64px;
       .content {
-        /*flex: 1;*/
+        flex: 1;
         line-height: 20px;
-        /*overflow: hidden;*/
+        overflow: hidden;
         text-align: left;
         .name {
           text-overflow: ellipsis;
@@ -31,7 +32,7 @@
 <template>
     <div class="song-list">
        <ul >
-          <li v-for="(item, index) in songs" @click="select(item, index)" :key="index" class="item">
+          <li v-for="(item, index) in songs" @click.stop="selectItem(item, index)" :key="index" class="item">
             <div class="content">
               <h2 class="name">{{item.name}}</h2>
               <p class="desc">{{getDesc(item)}}</p>
@@ -51,9 +52,10 @@ export default {
   },
   methods: {
     getDesc (song) {
+      console.log('getDesc +' + '触发')
       return `${song.singer}·${song.album}`
     },
-    select (item, index) {
+    selectItem (item, index) {
       this.$emit('select', item, index)
     }
   }

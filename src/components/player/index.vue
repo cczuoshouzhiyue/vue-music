@@ -387,7 +387,7 @@
       </div>
       </transition>
       <transition name="mini">
-        <div class="mini-player" v-show="!fullScreen" @click="open">
+        <div class="mini-player" v-show="!fullScreen" @click.stop="open">
         <div class="icon" >
           <img :src="currentSong.image" :class="cdCls" width="40px" height="40px">
         </div>
@@ -480,7 +480,6 @@ export default {
   },
   watch: {
     currentSong (newValue, oldValue) {
-      console.log(newValue)
       if (newValue.id === oldValue.id) {
         return
       }
@@ -713,7 +712,7 @@ export default {
       this.currentLineNum = lineNum
       console.log(txt)
       if (lineNum > 5) {
-        let lineEl = this.$refs.lyricLine[lineNum - 5];
+        let lineEl = this.$refs.lyricLine[lineNum - 5]
         this.$refs.lyricList.scrollToElement(lineEl, 1000)
       } else {
         this.$refs.lyricList.scrollTo(0, 0, 1000)

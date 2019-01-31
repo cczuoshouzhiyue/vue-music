@@ -118,7 +118,7 @@
 
 <script>
 import Scroll from '@/plugins/scroll'
-import SongList from '@/components/song-list'
+import SongList from '@/components/song-list/index'
 import {mapActions} from 'vuex'
 const RESERVED_HEIGHT = 40
 export default {
@@ -167,10 +167,10 @@ export default {
       this.scrollY = pos.y
     },
     selectHandle (item, index) {
+      console.log(item)
       this.selectPlay({list: this.list, index})
     },
     random () {
-      /*需要打乱列表的顺序，设置播放模式为随机模式,选择歌曲点击时，需要判断是否是随机模式，如果是随机模式需要打乱列表顺序， 同时找到打乱后的选中歌曲的索引index值,设置为currentIndex*/
       this.randomPlay({list: this.list})
     },
     ...mapActions([

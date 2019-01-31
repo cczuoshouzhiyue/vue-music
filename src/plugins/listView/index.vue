@@ -44,7 +44,7 @@
   .shortCutList {
     position: absolute;
     right: 10px;
-    z-index: 10;
+    z-index: 30;
     font-family: Helvetica;
     font-size: 12px;
     top:10%;
@@ -94,14 +94,14 @@
           <li v-for="item in list" :key="item.title" ref="listGroup">
             <h2 v-html="item.title"> </h2>
             <ul class="list">
-              <li v-for="child in item.list" :key="child.name" @click="selectItem(child)">
+              <li v-for="child in item.list" :key="child.name" @click.stop="selectItem(child)">
                 <img class="avatar" v-lazy="child.avatar">
                 <span class="name">{{child.name}}</span>
               </li>
             </ul>
           </li>
         </ul>
-        <div class="shortCutList" @touchstart.stop.prevent="onShortTouchStart" @touchmove.stop.prevent="onShortTouchMove"  @touchend.stop>
+        <div class="shortCutList" @touchstart.stop="onShortTouchStart" @touchmove.stop="onShortTouchMove"  @touchend.stop>
           <ul>
             <li v-for="(item, index) in shortCutList" :key="index" :data-index="index" :class="{'current': currIndex === index}">{{item}}</li>
           </ul>
@@ -159,6 +159,7 @@ export default {
       this.$emit('select', item)
     },
     onShortTouchStart (e) {
+      console.log('触发onShortTouchStart')
       let touchStartIndex = getDataIndex(e.target, 'index')
       let touchDom = e.touches[0]
       this.touchObj.pageYStart = touchDom.pageY
@@ -170,7 +171,6 @@ export default {
       let pageYEnd = touchDom.pageY
       let dif = (pageYEnd - this.touchObj.pageYStart) / ANCHOR_HEIGHT || 0
       let index = parseInt(this.touchObj.currIndex) + parseInt(dif)
-      console.log(index)
       this._scrollToElement(index)
     },
     _scrollToElement (index) {

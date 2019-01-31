@@ -47,7 +47,6 @@ export default {
         this.$router.push('/singer')
         return
       }
-      debugger
       getSingerDetail(this.singer.id).then((data) => {
         if (data.code === ERR_OK) {
           this.detailData(data.data.list)

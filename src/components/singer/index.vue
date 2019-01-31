@@ -83,6 +83,9 @@ export default {
       return hot.concat(ret)
     },
     goDetail (item) {
+      if (!item) {
+        return
+      }
       this.setSinger(item)
       this.$router.push('/singerDetail')
     },
